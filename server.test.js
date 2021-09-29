@@ -3,7 +3,17 @@ const WebSocket = require('ws');
 const wss = require('../server/index');
 
 describe('index.html', () => {
-  
+  test(`WebSocket Server uses its \'clients\' property`, async () => {
+
+    const ws = new WebSocket("ws://localhost:8082");
+    await new Promise(resolve => ws.onopen = resolve);    
+    
+    let clientsCount = wss.clients.size;
+    ws.close();
+
+    expect(clientsCount).toEqual(1);
+  });  
+
   test("WebSocket Server is sending back received data", async () => {
 
     const ws = new WebSocket("ws://localhost:8082");
@@ -41,17 +51,6 @@ describe('index.html', () => {
     
     expect(receivedMessage1).toEqual(receivedMessage2);
   });
-
-  test(`WebSocket Server uses its \'clients\' property`, async () => {
-
-    const ws = new WebSocket("ws://localhost:8082");
-    await new Promise(resolve => ws.onopen = resolve);    
-    
-    let clientsCount = wss.clients.size;
-    ws.close();
-
-    expect(clientsCount).toEqual(1);
-  });  
 
   afterAll(() => {  
     wss.close();    
